@@ -254,6 +254,7 @@ final class Span implements OpenTracingSpan
         if (is_string($error) || method_exists($error, '__toString')) {
             $this->hasError = true;
             $this->tags[Tags\ERROR_MSG] = (string) $error;
+            $this->tags[Tags\ERROR_TYPE] = "message";
         }
 
         $this->hasError = (bool) $error;
