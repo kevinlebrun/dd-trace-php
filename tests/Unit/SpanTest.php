@@ -66,6 +66,7 @@ final class SpanTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($span->hasError());
         $this->assertEquals($span->getTag(Tags\ERROR_MSG), "something went wrong");
+        $this->assertEquals($span->getTag(Tags\ERROR_TYPE), "message");
     }
 
     public function testSpanErrorWithStringableAddsExpectedTag()
@@ -75,6 +76,7 @@ final class SpanTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($span->hasError());
         $this->assertEquals($span->getTag(Tags\ERROR_MSG), "something went wrong");
+        $this->assertEquals($span->getTag(Tags\ERROR_TYPE), "message");
     }
 
     public function testSpanErrorWithRandomValueWillCastAsBool()
