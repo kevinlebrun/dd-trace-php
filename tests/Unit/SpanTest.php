@@ -59,6 +59,35 @@ final class SpanTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($span->getTag(Tags\ERROR_TYPE), Exception::class);
     }
 
+    public function testSpanErrorWithStringAddsExpectedTag()
+    {
+        $span = $this->createSpan();
+        $span->setError("something went wrong");
+
+        $this->assertTrue($span->hasError());
+        $this->assertEquals($span->getTag(Tags\ERROR_MSG), "something went wrong");
+    }
+
+    public function testSpanErrorWithStringableAddsExpectedTag()
+    {
+        $span = $this->createSpan();
+        $span->setError(new Stringable("something went wrong"));
+
+        $this->assertTrue($span->hasError());
+        $this->assertEquals($span->getTag(Tags\ERROR_MSG), "something went wrong");
+    }
+
+    public function testSpanErrorWithRandomValueWillCastAsBool()
+    {
+        $span = $this->createSpan();
+        $span->setError(1);
+        $this->assertTrue($span->hasError());
+
+        $span = $this->createSpan();
+        $span->setError(0);
+        $this->assertFalse($span->hasError());
+    }
+
     public function testSpanErrorRemainsImmutableAfterFinishing()
     {
         $span = $this->createSpan();
@@ -66,14 +95,6 @@ final class SpanTest extends PHPUnit_Framework_TestCase
 
         $span->setError(new Exception());
         $this->assertFalse($span->hasError());
-    }
-
-    public function testSpanErrorFailsForInvalidError()
-    {
-        $this->expectException(InvalidSpanArgument::class);
-        $this->expectExceptionMessage('Error should be either Exception or Throwable, got integer.');
-        $span = $this->createSpan();
-        $span->setError(1);
     }
 
     public function testAddCustomTagsSuccess()
@@ -108,5 +129,20 @@ final class SpanTest extends PHPUnit_Framework_TestCase
         );
 
         return $span;
+    }
+}
+
+final class Stringable
+{
+    private $msg;
+
+    public function __construct($msg)
+    {
+        $this->msg = $msg;
+    }
+
+    public function __toString()
+    {
+        return $this->msg;
     }
 }
